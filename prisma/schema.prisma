@@ -1,0 +1,123 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  email               String               @unique
+  password            String
+  role                Role // admin, member, leader
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  deletedAt           DateTime?
+  devices             Device[]
+  cellsLed            Cell[]               @relation("LeaderCells")
+  cellMembers         CellMember[]
+  eventsCreated       Event[]              @relation("UserEvents")
+  eventSubscriptions  EventSubscription[]
+  notifications_users notification_users[]
+}
+
+model Device {
+  id          Int       @id @default(autoincrement())
+  deviceToken String
+  platform    String // android, ios
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Cell {
+  id          Int       @id @default(autoincrement())
+  name        String
+  meetingDay  String // ex: Sunday, Monday
+  meetingTime DateTime // Prisma no tiene tipo "time", se usa DateTime
+  location    String?
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  updatedAt   DateTime  @updatedAt
+  leaderId    Int?
+  leader      User?     @relation("LeaderCells", fields: [leaderId], references: [id])
+
+  members CellMember[]
+}
+
+model CellMember {
+  id       Int       @id @default(autoincrement())
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+  cellId   Int
+  cell     Cell      @relation(fields: [cellId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Event {
+  id                  Int                  @id @default(autoincrement())
+  title               String
+  description         String?
+  eventDate           DateTime
+  location            String?
+  notifyAll           Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  deletedAt           DateTime?
+  createdBy           Int
+  creator             User                 @relation("UserEvents", fields: [createdBy], references: [id])
+  notifications_users notification_users[]
+  subscriptions       EventSubscription[]
+  notifications       Notification[]
+}
+
+model EventSubscription {
+  id           Int      @id @default(autoincrement())
+  subscribedAt DateTime @default(now())
+
+  eventId Int
+  event   Event @relation(fields: [eventId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id                 Int                  @id @default(autoincrement())
+  title              String
+  body               String
+  sendAt             DateTime
+  sent               Boolean              @default(false)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  deletedAt          DateTime?
+  eventId            Int
+  event              Event                @relation(fields: [eventId], references: [id])
+  notification_users notification_users[]
+}
+
+model notification_users {
+  id              Int   @id @default(autoincrement())
+  user_id         Int
+  eventId         Int?
+  notification_id Int
+  event           Event? @relation(fields: [eventId], references: [id])
+
+  seen         Boolean      @default(false)
+  user         User         @relation(fields: [user_id], references: [id])
+  notification Notification @relation(fields: [notification_id], references: [id])
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+  LEADER
+}
