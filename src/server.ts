@@ -5,6 +5,8 @@ import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import cellRoutes from "./routes/cell.routes";
 import eventRoutes from "./routes/event.routes";
+import cron from "node-cron"; // <-- 1. Importa node-cron
+import { checkAndSendNotifications } from "./services/notification.services";
 dotenv.config();
 const app = express();
 
@@ -25,7 +27,10 @@ app.get("/", (req, res) => {
   res.send("Backend con funcionando correctamente");
 });
 
-
+cron.schedule("* * * * *", () => {
+  console.log("Ejecutando tarea programada de notificaciones...");
+  checkAndSendNotifications();
+});
 
 app.listen(process.env.PORT || 4000, () => {
   console.log(`Servidor corriendo en http://localhost:${process.env.PORT || 4000}`);

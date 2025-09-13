@@ -15,8 +15,10 @@ export const createUserController = async (
 	req: Request,
 	res: Response
 ) => {
+
 	const userData: UserCreateInterface = req.body;
 	const hashedPassword = await hashPassword(userData.user.password);
+	console.log(userData)
 	try {
 		const newUser = await createUser({ ...userData, user: { ...userData.user, password: hashedPassword } });
 		res.status(201).json({ message: "Usuario creado exitosamente", user: newUser });
