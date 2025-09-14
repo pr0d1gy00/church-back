@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const event_controller_1 = require("../controller/event.controller");
+const router = (0, express_1.Router)();
+router.post("/createEvent", event_controller_1.createEventController);
+router.delete("/deleteEvent", event_controller_1.deleteEventController);
+router.put("/updateEvent", event_controller_1.updateEventController);
+router.get("/", event_controller_1.getAllEventsController);
+router.post("/removeUserOfEventToNotify", event_controller_1.removeUserFromEventToNotifyController);
+router.get("/getEventById", event_controller_1.getEventByIdController);
+router.post("/addUserToEvent", event_controller_1.addUserToEventToNotifyController);
+router.get("/notifications/:id", event_controller_1.getAllNotificationsByEventIdController);
+router.get("/getEventByUserSubscription", event_controller_1.getEventByUserSubscriptionController);
+exports.default = router;

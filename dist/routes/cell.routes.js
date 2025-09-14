@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const cell_controller_1 = require("../controller/cell.controller");
+const router = (0, express_1.Router)();
+router.post("/createCell", cell_controller_1.createCellController);
+router.get("/getAllCells", cell_controller_1.getAllCellsController);
+router.get("/getCellById", cell_controller_1.getCellByIdController);
+router.delete("/deleteCell", cell_controller_1.deleteCellController);
+router.put("/updateCell", cell_controller_1.updateCellController);
+router.post("/addUserToCell", cell_controller_1.addUserToCellController);
+router.delete("/removeUserFromCell", cell_controller_1.removeUserFromCellController);
+exports.default = router;

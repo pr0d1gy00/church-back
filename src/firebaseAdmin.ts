@@ -1,7 +1,9 @@
 import admin from "firebase-admin";
 import { ServiceAccount } from "firebase-admin";
-import serviceAccount from "../church-6a68a-firebase-adminsdk-fbsvc-3cd3b5d2ef.json";
-
+// import serviceAccount from "../church-6a68a-firebase-adminsdk-fbsvc-3cd3b5d2ef.json";
+const serviceAccount = JSON.parse(
+	process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+);
 if (!admin.apps.length) {
 	admin.initializeApp({
 		credential: admin.credential.cert(
