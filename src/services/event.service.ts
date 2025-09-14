@@ -122,7 +122,27 @@ export const addUserToEventToNotify = async ({
 		throw new Error("Error adding user to event notifications");
 	}
 };
-
+export async function getEventByUserSubscription( userId: number ) {
+	const userExist = await validateUserExists({ id: userId });
+	if (!userExist) throw new Error("User not found");
+	try {
+		const events = await prisma.event.findMany({
+			where: {
+				subscriptions: {
+					some: {
+						userId: userId
+					}
+				},
+				deletedAt: null
+			},
+			orderBy: { eventDate: "asc" },
+		});
+		return events;
+	} catch (error) {
+		console.error("Error fetching events by user subscription:", error);
+		throw new Error("Error fetching events by user subscription");
+	}
+}
 export async function getAllEvents(): Promise<EventInterface[]> {
 	try {
 		const events = await prisma.event.findMany({
@@ -216,10 +236,24 @@ export async function deleteEvent(
 		);
 	if (!eventExist) throw new Error("Event not found");
 	try {
-		const deletedEvent = await prisma.event.update({
-			where: { id },
-			data: { deletedAt: new Date() },
+		const deletedEvent = await prisma.$transaction(async (tx) => {
+			const deletedEvent = await tx.event.update({
+				where: { id },
+				data: { deletedAt: new Date() },
+			});
+			const deletedEventSubscriptions = await tx.eventSubscription.deleteMany({
+				where: { eventId: id },
+			});
+			const deletedNotification = await tx.notification.deleteMany({
+				where: { eventId: id },
+			});
+			const deletedNotificationUsers = await tx.notification_users.deleteMany({
+				where: { eventId: id },
+			});
+
+			return deletedEvent;
 		});
+
 		return deletedEvent;
 	} catch (error) {
 		console.error("Error deleting event:", error);

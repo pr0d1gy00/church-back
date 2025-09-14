@@ -6,25 +6,32 @@ const prisma = new PrismaClient();
 
 export async function checkAndSendNotifications() {
     console.log("CRON JOB: Verificando notificaciones pendientes...");
-
+    
     const now = new Date();
 
     try {
-        // 1. Buscar notificaciones que deben enviarse y aún no han sido enviadas.
+
         const notificationsToSend = await prisma.notification.findMany({
             where: {
                 sendAt: {
-                    lte: now, // La hora de envío es ahora o en el pasado
+                    lte: now,
                 },
-                sent: false, // Aún no se ha enviado
+                sent: false,
             },
             include: {
                 notification_users: {
+                    where: {
+                        user: {
+                            deletedAt: null,
+                        },
+                    },
                     include: {
                         user: {
                             include: {
                                 devices: true,
+
                             },
+
                         },
                     },
                 },
