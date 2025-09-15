@@ -43,8 +43,6 @@ export const getAllCells = async (): Promise<CellInterface[]> => {
 	}
 };
 export const getCellById = async (id: number): Promise<CellInterface | null> => {
-	const cellExists = await validateCellExists(id);
-	if (!cellExists) throw new Error("Cell not found");
 	try {
 		const cell = await prisma.cell.findFirst({
 			where: { id, deletedAt: null },
@@ -61,6 +59,20 @@ export const getCellById = async (id: number): Promise<CellInterface | null> => 
 	} catch (error) {
 		console.error("Error fetching cell by ID:", error);
 		throw new Error("Error fetching cell by ID");
+	}
+};
+export const getCellsDeleted = async (): Promise<CellInterface[] | null> => {
+	try {
+		const cells = await prisma.cell.findMany({
+			where: { deletedAt: { not: null } },
+			include:{
+				leader:true
+			}
+		});
+		return cells;
+	} catch (error) {
+		console.error("Error fetching deleted cells:", error);
+		throw new Error("Error fetching deleted cells");
 	}
 };
 export const updateCell = async (id: number, data: Partial<CellCreateInterface>): Promise<CellInterface | null> => {
@@ -112,6 +124,20 @@ export const deleteCell = async (id: number): Promise<CellInterface | null> => {
 	} catch (error) {
 		console.error("Error deleting cell:", error);
 		throw new Error("Error deleting cell");
+	}
+};
+export const activateCell = async (id: number): Promise<CellInterface | null> => {
+	const cellExists = await validateCellExists(id);
+	if (!cellExists) throw new Error("Cell not found");
+	try {
+		const cell = await prisma.cell.update({
+			where: { id },
+			data: { deletedAt: null }
+		});
+		return cell;
+	} catch (error) {
+		console.error("Error activating cell:", error);
+		throw new Error("Error activating cell");
 	}
 };
 export const addUserToCell = async (cellId: number, userId: number[]) => {

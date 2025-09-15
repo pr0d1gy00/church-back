@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import {  createCell,getAllCells,getCellById,deleteCell,updateCell,addUserToCell,removeUserFromCell} from "../services/cell.services";
+import {  createCell,getAllCells,getCellById,deleteCell,updateCell,addUserToCell,removeUserFromCell,activateCell,getCellsDeleted} from "../services/cell.services";
 import { CellCreateInterface } from "../interfaces/cell.interfaces";
 
 export const createCellController = async (req: Request, res: Response) => {
@@ -86,6 +86,22 @@ export const deleteCellController = async (req: Request, res: Response) => {
 		}
 	}
 }
+export const activateCellController = async (req: Request, res: Response) => {
+	const id = parseInt(req.query.id as string);
+	try {
+		const cell = await activateCell(id);
+		res.status(200).json({message:"Felicidades Hermano. Celula activada", cell });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(500).json({ message: error.message });
+		}
+		else {
+			res.status(500).json({
+				message: "Ocurrió un error desconocido",
+			});
+		}
+	}
+}
 export const addUserToCellController = async (req: Request, res: Response) => {
 	const cellId = parseInt(req.query.cellId as string);
 	const userId:number[] = req.body.userId;
@@ -93,6 +109,21 @@ export const addUserToCellController = async (req: Request, res: Response) => {
 		const add = await addUserToCell(cellId, userId);
 		res.status(200).json({ message: "Usuarios agregado a la celula exitosamente" });
 	} catch (error) {
+		if (error instanceof Error) {
+			res.status(500).json({ message: error.message });
+		} else {
+			res.status(500).json({
+				message: "Ocurrió un error desconocido",
+			});
+		}
+	}
+}
+export const getCellsDeletedController = async (req: Request, res: Response) => {
+	try {
+		const cells = await getCellsDeleted();
+		res.status(200).json({message:"Estas son las celulas eliminadas", cells });
+	}
+	catch (error) {
 		if (error instanceof Error) {
 			res.status(500).json({ message: error.message });
 		} else {
