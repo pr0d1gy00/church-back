@@ -6,6 +6,8 @@ import {
 	createUser,
 	deleteUserById,
 	updateUserById,
+	activateUserById,
+	getAllUsersDeleted
 } from "../services/user.services";
 import { UserCreateInterface, UserInterface } from "../interfaces/user.interfaces";
 import { hashPassword, validateData } from "../helpers/userHelper";
@@ -89,7 +91,7 @@ export const deleteUserByIdController = async (
 	req: Request,
 	res: Response
 ) => {
-	const id = parseInt(req.params.id);
+	const id = parseInt(req.query.id as string);
 	try {
 		const deletedUser = await deleteUserById(id);
 		res.status(200).json({ message: "Usuario eliminado exitosamente", user: deletedUser });
@@ -130,6 +132,45 @@ export const removeLeaderFromCellsController = async (req: Request, res: Respons
 	try {
 		const result = await removeLeaderFromCells(leaderId);
 		res.status(200).json({ message: "Lider removido de su célula exitosamente", result });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(500).json({ message: error.message });
+		} else {
+			res.status(500).json({
+				message: "Ocurrió un error desconocido",
+			});
+		}
+	}
+};
+
+export const getAllUsersDeletedController = async (
+	req: Request,
+	res: Response
+) => {
+	try {
+		const users = await getAllUsersDeleted();
+		console.log(users)
+		res.status(200).json({ message: "Usuarios eliminados encontrados exitosamente", users });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(500).json({ message: error.message });
+		} else {
+			res.status(500).json({
+				message: "Ocurrió un error desconocido",
+			});
+		}
+	}
+}
+
+export const activateUserByIdController = async (
+	req: Request,
+	res: Response
+) => {
+	const id = parseInt(req.query.id as string);
+	console.log(id)
+	try {
+		const activatedUser = await activateUserById(id);
+		res.status(200).json({ message: "Usuario activado exitosamente", user: activatedUser });
 	} catch (error) {
 		if (error instanceof Error) {
 			res.status(500).json({ message: error.message });

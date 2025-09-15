@@ -7,6 +7,8 @@ import {
 	deleteUserByIdController,
 	updateUserByIdController,
 	removeLeaderFromCellsController,
+	activateUserByIdController,
+	getAllUsersDeletedController
 } from "../controller/user.controller";
 
 const router = Router();
@@ -15,8 +17,9 @@ router.post("/createUser", createUserController);
 router.get("/getUserbyId", getUserByIdController);
 router.get("/getAllUsers", getAllUsersController);
 router.get("/getUserbyEmail/:email", getUserByEmailController);
-router.delete("/deleteUserbyId/:id", deleteUserByIdController);
+router.delete("/deleteUserbyId", deleteUserByIdController);
 router.put("/updateUserbyId", updateUserByIdController);
 router.put("/removeLeaderFromCells", removeLeaderFromCellsController);
-
+router.put("/activateUserById", activateUserByIdController);
+router.get("/getAllUsersDeleted", getAllUsersDeletedController);
 export default router;

@@ -2,11 +2,12 @@
 
 import { PrismaClient } from "@prisma/client";
 import {sendPushNotification} from "../notification";
+import e from "express";
 const prisma = new PrismaClient();
 
 export async function checkAndSendNotifications() {
     console.log("CRON JOB: Verificando notificaciones pendientes...");
-    
+
     const now = new Date();
 
     try {
@@ -37,7 +38,7 @@ export async function checkAndSendNotifications() {
                 },
             },
         });
-		console.log(notificationsToSend.map(n=>n.notification_users.map(nu=>nu.user.devices.map(d=>d.deviceToken))))
+
         if (notificationsToSend.length === 0) {
             console.log("CRON JOB: No hay notificaciones para enviar.");
             return;
@@ -62,7 +63,24 @@ export async function checkAndSendNotifications() {
 
             sentNotificationIds.push(notification.id);
         }
-		console.log(sentNotificationIds)
+        const eventsExpired = await prisma.event.findMany({
+            where:{
+                deletedAt:null,
+                eventDate:{
+                    lt: new Date()
+                }
+            }
+        })
+        console.log('Eventos expirados:', eventsExpired)
+        const eventsUpdated = await prisma.event.updateMany({
+            where:{
+                id:{ in: eventsExpired.map(event => event.id) }
+            },
+            data:{
+                deletedAt: new Date()
+            }
+        })
+        console.log(`CRON JOB: Marcados ${eventsUpdated} eventos como eliminados por estar expirados.`);
         if (sentNotificationIds.length > 0) {
             await prisma.notification.updateMany({
                 where: {
@@ -76,6 +94,8 @@ export async function checkAndSendNotifications() {
             });
             console.log(`CRON JOB: Marcadas ${sentNotificationIds.length} notificaciones como enviadas.`);
         }
+
+
     } catch (error) {
         console.error("CRON JOB: Error durante la verificación de notificaciones:", error);
     }

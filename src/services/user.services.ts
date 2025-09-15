@@ -45,7 +45,9 @@ export const getUserByEmail = async (email: string) => {
 	if (!userExists) throw new Error("User not found");
 	try {
 		const user = await prisma.user.findUnique({
-			where: { email },
+			where: { email
+				, deletedAt: null
+			 },
 		});
 		return user;
 	} catch (error) {
@@ -77,8 +79,6 @@ export const getAllUsers = async () => {
 	}
 };
 export const getUserById = async (id: number) => {
-	const userExists = await validateUserExists({ id });
-	if (!userExists) throw new Error("User not found");
 	try {
 		const user = await prisma.user.findUnique({ where: { id } });
 		return user;
@@ -101,7 +101,30 @@ export const deleteUserById = async (id: number) => {
 		throw new Error("Error deleting user by ID");
 	}
 };
-
+export const activateUserById = async (id: number) => {
+	console.log(id)
+	try {
+		const user = await prisma.user.update({
+			where: { id },
+			data: { deletedAt: null },
+		});
+		return user;
+	} catch (error) {
+		console.error("Error activating user by ID:", error);
+		throw new Error("Error activating user by ID");
+	}
+};
+export const getAllUsersDeleted = async () => {
+	try {
+		const users = await prisma.user.findMany({
+			where: { deletedAt: { not: null } },
+		});
+		return users;
+	} catch (error) {
+		console.error("Error fetching deleted users:", error);
+		throw new Error("Error fetching deleted users");
+	}
+};
 export const removeLeaderFromCells = async (userId: number) => {
 	const userLeaderCell = await prisma.cell.findFirst({
 		where: { leaderId: userId, deletedAt: null },
