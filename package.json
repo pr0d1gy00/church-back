@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc && cp src/church-6a68a-firebase-adminsdk-fbsvc-0d9a7f8633.json dist/",
+     "build": "tsc && copy church-6a68a-firebase-adminsdk-fbsvc-ced6ea89e8.json dist\\church-6a68a-firebase-adminsdk-fbsvc-ced6ea89e8.json"
+,
+
     "seed": "ts-node prisma/seed.ts",
     "start": "node dist/server.js",
     "prisma": "prisma"
