@@ -1,5 +1,5 @@
-import e, { Request, Response } from "express";
-import { getUserByEmail, getUserById } from "../services/user.services";
+import { Request, Response } from "express";
+import { getUserByEmail } from "../services/user.services";
 import { comparePassword } from "../helpers/userHelper";
 
 export const loginController = async (req: Request, res: Response) => {

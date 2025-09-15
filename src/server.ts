@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 
 cron.schedule("* * * * *", () => {
   console.log("Ejecutando tarea programada de notificaciones...");
+  console.log("Hora del sistema (UTC):", new Date().toISOString());
   checkAndSendNotifications();
 });
 
