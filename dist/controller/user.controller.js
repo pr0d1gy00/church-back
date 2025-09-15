@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeLeaderFromCellsController = exports.updateUserByIdController = exports.deleteUserByIdController = exports.getUserByEmailController = exports.getAllUsersController = exports.getUserByIdController = exports.createUserController = void 0;
+exports.activateUserByIdController = exports.getAllUsersDeletedController = exports.removeLeaderFromCellsController = exports.updateUserByIdController = exports.deleteUserByIdController = exports.getUserByEmailController = exports.getAllUsersController = exports.getUserByIdController = exports.createUserController = void 0;
 const user_services_1 = require("../services/user.services");
 const userHelper_1 = require("../helpers/userHelper");
 const user_services_2 = require("../services/user.services");
@@ -87,7 +87,7 @@ const getUserByEmailController = (req, res) => __awaiter(void 0, void 0, void 0,
 });
 exports.getUserByEmailController = getUserByEmailController;
 const deleteUserByIdController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.query.id);
     try {
         const deletedUser = yield (0, user_services_1.deleteUserById)(id);
         res.status(200).json({ message: "Usuario eliminado exitosamente", user: deletedUser });
@@ -142,3 +142,40 @@ const removeLeaderFromCellsController = (req, res) => __awaiter(void 0, void 0, 
     }
 });
 exports.removeLeaderFromCellsController = removeLeaderFromCellsController;
+const getAllUsersDeletedController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield (0, user_services_1.getAllUsersDeleted)();
+        console.log(users);
+        res.status(200).json({ message: "Usuarios eliminados encontrados exitosamente", users });
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
+        }
+        else {
+            res.status(500).json({
+                message: "Ocurrió un error desconocido",
+            });
+        }
+    }
+});
+exports.getAllUsersDeletedController = getAllUsersDeletedController;
+const activateUserByIdController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = parseInt(req.query.id);
+    console.log(id);
+    try {
+        const activatedUser = yield (0, user_services_1.activateUserById)(id);
+        res.status(200).json({ message: "Usuario activado exitosamente", user: activatedUser });
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ message: error.message });
+        }
+        else {
+            res.status(500).json({
+                message: "Ocurrió un error desconocido",
+            });
+        }
+    }
+});
+exports.activateUserByIdController = activateUserByIdController;

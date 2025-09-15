@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUserById = exports.removeLeaderFromCells = exports.deleteUserById = exports.getUserById = exports.getAllUsers = exports.getUserByEmail = exports.createUser = void 0;
+exports.updateUserById = exports.removeLeaderFromCells = exports.getAllUsersDeleted = exports.activateUserById = exports.deleteUserById = exports.getUserById = exports.getAllUsers = exports.getUserByEmail = exports.createUser = void 0;
 const client_1 = require("@prisma/client");
 const userHelper_1 = require("../helpers/userHelper");
 const prisma = new client_1.PrismaClient();
@@ -52,7 +52,9 @@ const getUserByEmail = (email) => __awaiter(void 0, void 0, void 0, function* ()
         throw new Error("User not found");
     try {
         const user = yield prisma.user.findUnique({
-            where: { email },
+            where: { email,
+                deletedAt: null
+            },
         });
         return user;
     }
@@ -88,9 +90,6 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.getAllUsers = getAllUsers;
 const getUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const userExists = yield (0, userHelper_1.validateUserExists)({ id });
-    if (!userExists)
-        throw new Error("User not found");
     try {
         const user = yield prisma.user.findUnique({ where: { id } });
         return user;
@@ -118,6 +117,34 @@ const deleteUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.deleteUserById = deleteUserById;
+const activateUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(id);
+    try {
+        const user = yield prisma.user.update({
+            where: { id },
+            data: { deletedAt: null },
+        });
+        return user;
+    }
+    catch (error) {
+        console.error("Error activating user by ID:", error);
+        throw new Error("Error activating user by ID");
+    }
+});
+exports.activateUserById = activateUserById;
+const getAllUsersDeleted = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield prisma.user.findMany({
+            where: { deletedAt: { not: null } },
+        });
+        return users;
+    }
+    catch (error) {
+        console.error("Error fetching deleted users:", error);
+        throw new Error("Error fetching deleted users");
+    }
+});
+exports.getAllUsersDeleted = getAllUsersDeleted;
 const removeLeaderFromCells = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const userLeaderCell = yield prisma.cell.findFirst({
         where: { leaderId: userId, deletedAt: null },

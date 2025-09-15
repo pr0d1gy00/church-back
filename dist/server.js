@@ -29,6 +29,7 @@ app.get("/", (req, res) => {
 });
 node_cron_1.default.schedule("* * * * *", () => {
     console.log("Ejecutando tarea programada de notificaciones...");
+    console.log("Hora del sistema (UTC):", new Date().toISOString());
     (0, notification_services_1.checkAndSendNotifications)();
 });
 app.listen(process.env.PORT || 4000, () => {

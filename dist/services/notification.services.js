@@ -43,7 +43,6 @@ function checkAndSendNotifications() {
                     },
                 },
             });
-            console.log(notificationsToSend.map(n => n.notification_users.map(nu => nu.user.devices.map(d => d.deviceToken))));
             if (notificationsToSend.length === 0) {
                 console.log("CRON JOB: No hay notificaciones para enviar.");
                 return;
@@ -63,7 +62,24 @@ function checkAndSendNotifications() {
                 }
                 sentNotificationIds.push(notification.id);
             }
-            console.log(sentNotificationIds);
+            const eventsExpired = yield prisma.event.findMany({
+                where: {
+                    deletedAt: null,
+                    eventDate: {
+                        lt: new Date()
+                    }
+                }
+            });
+            console.log('Eventos expirados:', eventsExpired);
+            const eventsUpdated = yield prisma.event.updateMany({
+                where: {
+                    id: { in: eventsExpired.map(event => event.id) }
+                },
+                data: {
+                    deletedAt: new Date()
+                }
+            });
+            console.log(`CRON JOB: Marcados ${eventsUpdated} eventos como eliminados por estar expirados.`);
             if (sentNotificationIds.length > 0) {
                 yield prisma.notification.updateMany({
                     where: {
