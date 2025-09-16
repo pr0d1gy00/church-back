@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-     "build": "tsc && copy church-6a68a-firebase-adminsdk-fbsvc-ced6ea89e8.json dist\\church-6a68a-firebase-adminsdk-fbsvc-ced6ea89e8.json"
-,
-
+    "build": "tsc && copy church-6a68a-firebase-adminsdk-fbsvc-ced6ea89e8.json dist\\church-6a68a-firebase-adminsdk-fbsvc-ced6ea89e8.json",
     "seed": "ts-node prisma/seed.ts",
     "start": "node dist/server.js",
     "prisma": "prisma"
@@ -23,6 +21,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "firebase-admin": "^13.5.0",
+    "jsonwebtoken": "^9.0.2",
     "node-cron": "^4.2.1"
   },
   "devDependencies": {

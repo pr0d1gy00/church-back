@@ -54,7 +54,7 @@ export async function createManyNotificationsByEvent({
 				? `Faltan ${date} dias para el evento `
 				: date < 1
 				? `Faltan ${
-						date === 0.12 ? 2 : date === 0.25 ? 6 : 12
+						date === 0.12 ? 2 : date === 0.25 ? 6 : date=== 0.5 ? 12 : 18
 				} horas para el evento `
 				: "Falta 1 dia para el evento "
 		}${` ` + event.title}`,
@@ -72,25 +72,45 @@ export async function createManyNotificationsByEvent({
 			return newSendAtDate;
 		})(),
 	}));
+	console.log(notifications);
 	return notifications;
 }
 export async function calculateManyNotifications(date: Date) {
 	const howManynotifications: number[] = [];
 	const daysValidsToCreateNotification = [
-		0.12, 0.25, 0.5, 1, 2, 3, 4, 5, 7, 15, 20, 25, 30, 60, 90,
+		0.12, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 7, 15, 20, 25, 30, 60, 90,
 	];
 	const dateEvent = new Date(date).getTime();
 	const actualDate = new Date().getTime();
 	let diffDays = 0;
-
+	console.log(dateEvent, actualDate);
+	console.log(diffDays)
 	if (dateEvent > actualDate) {
 		const diffTime = dateEvent - actualDate;
+		console.log(diffTime)
 		diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 	}
+
 	daysValidsToCreateNotification.forEach((day) => {
 		if (diffDays > day) {
 			howManynotifications.push(day);
 		}
 	});
+	console.log(howManynotifications)
 	return howManynotifications;
 }
+(async () => {
+    const notifications = await calculateManyNotifications(new Date("2025-09-17T00:00:00.000Z"));
+    console.log(notifications);
+	createManyNotificationsByEvent({
+	event: {
+		title: "Evento de prueba",
+		eventDate: new Date("2025-09-1T23:00:00.000Z"),
+		description: "Descripción del evento de prueba",
+		location: "Ubicación del evento de prueba",
+		createdBy: 1,
+		notifyAll: true,
+	},
+	dates: notifications,
+});
+})();
