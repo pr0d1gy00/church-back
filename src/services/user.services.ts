@@ -5,6 +5,7 @@ import {
 	UserPrismaInterface,
 } from "../interfaces/user.interfaces";
 import { validateData, validateUserExists } from "../helpers/userHelper";
+import e from "express";
 const prisma = new PrismaClient();
 
 export const createUser = async (data: UserCreateInterface) => {
@@ -34,7 +35,7 @@ export const createUser = async (data: UserCreateInterface) => {
 		return { user, device: userDevice };
 	} catch (error) {
 		console.error("Error creating user:", error);
-		throw new Error("Error creating user");
+		throw new Error(error instanceof Error ? error.message : "Error creating user");
 	}
 };
 export const getUserByEmail = async (email: string) => {
