@@ -43,9 +43,10 @@ export const getAllCells = async (): Promise<CellInterface[]> => {
 	}
 };
 export const getCellById = async (id: number): Promise<CellInterface | null> => {
+	console.log(id)
 	try {
 		const cell = await prisma.cell.findFirst({
-			where: { id, deletedAt: null },
+			where: { id},
 			include:{
 				members:{
 					include:{
@@ -55,6 +56,7 @@ export const getCellById = async (id: number): Promise<CellInterface | null> => 
 				}
 			}
 		});
+		console.log(cell)
 		return cell;
 	} catch (error) {
 		console.error("Error fetching cell by ID:", error);
@@ -127,8 +129,9 @@ export const deleteCell = async (id: number): Promise<CellInterface | null> => {
 	}
 };
 export const activateCell = async (id: number): Promise<CellInterface | null> => {
-	const cellExists = await validateCellExists(id);
-	if (!cellExists) throw new Error("Cell not found");
+	console.log(id
+		
+	)
 	try {
 		const cell = await prisma.cell.update({
 			where: { id },

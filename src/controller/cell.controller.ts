@@ -88,6 +88,7 @@ export const deleteCellController = async (req: Request, res: Response) => {
 }
 export const activateCellController = async (req: Request, res: Response) => {
 	const id = parseInt(req.query.id as string);
+	console.log(id)
 	try {
 		const cell = await activateCell(id);
 		res.status(200).json({message:"Felicidades Hermano. Celula activada", cell });

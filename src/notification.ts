@@ -1,5 +1,5 @@
 // notifications.js
-import admin from "./firebaseAdmin";
+	import admin from "./firebaseAdmin";
 export async function sendPushNotification(
 	token: string,
 	title: string,

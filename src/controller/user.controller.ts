@@ -41,6 +41,7 @@ export const getUserByIdController = async (
 	const id = parseInt(req.query.id as string);
 	try {
 		const user = await getUserById(id);
+		console.log(user)
 		res.status(200).json({ message: "Usuario encontrado exitosamente", user });
 	} catch (error) {
 		if (error instanceof Error) {
