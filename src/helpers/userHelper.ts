@@ -2,6 +2,7 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { UserCreateInterface } from '../interfaces/user.interfaces';
+import e from 'express';
 const prisma = new PrismaClient();
 
 export async function validateUserExists({id,email}:{id?:number,email?:string}){
@@ -34,21 +35,23 @@ export async function comparePassword(password:string, hashedPassword:string){
 	return await bcrypt.compare(password, hashedPassword);
 }
 
-export async function validateData(data: Partial<UserCreateInterface>) {
+export async function validateData(data: Partial<UserCreateInterface>, validateName = true, validatePassword = true, validateEmail = true) {
+	console.log('desde el await')
 	const { email, password, name } = data.user!;
-
-	if (email && !/\S+@\S+\.\S+/.test(email)) {
+	console.log('desde del data')
+	console.log(';l;l',email, password, name);
+	if (validateEmail && email && !/\S+@\S+\.\S+/.test(email)) {
 		throw new Error("Invalid email format");
 	}
 
-	if (password && password.length < 6) {
+	if (validatePassword && password && password.length < 6) {
 		throw new Error("Password must be at least 6 characters long");
 	}
 
-	if (name && name.length < 2) {
+	if (validateName && name && name.length < 2) {
 		throw new Error("Name must be at least 2 characters long");
 	}
-	if(name.includes('123') || name.includes('!') || name.includes('@') || name.includes('#') || name.includes('$') || name.includes('%') || name.includes('^') || name.includes('&') || name.includes('*')){
+	if(validateName && (name.includes('123') || name.includes('!') || name.includes('@') || name.includes('#') || name.includes('$') || name.includes('%') || name.includes('^') || name.includes('&') || name.includes('*'))){
 
 		throw new Error("Name contains invalid characters");
 	}

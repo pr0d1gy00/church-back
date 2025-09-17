@@ -1,10 +1,13 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User, Role } from "@prisma/client";
 import {
 	UserCreateInterface,
 	UserInterface,
 	UserPrismaInterface,
 } from "../interfaces/user.interfaces";
-import { validateData, validateUserExists } from "../helpers/userHelper";
+import {
+	validateData,
+	validateUserExists,
+} from "../helpers/userHelper";
 import e from "express";
 const prisma = new PrismaClient();
 
@@ -33,9 +36,9 @@ export const createUser = async (data: UserCreateInterface) => {
 		}
 
 		return { user, device: userDevice };
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error creating user:", error);
-		throw error
+		throw error;
 	}
 };
 export const getUserByEmail = async (email: string) => {
@@ -46,14 +49,14 @@ export const getUserByEmail = async (email: string) => {
 	if (!userExists) throw new Error("User not found");
 	try {
 		const user = await prisma.user.findUnique({
-			where: { email
-				, deletedAt: null
-			 },
+			where: { email, deletedAt: null },
 		});
 		return user;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error fetching user by email:", error);
-		throw new Error(error.message || "Error fetching user by email");
+		throw new Error(
+			error.message || "Error fetching user by email"
+		);
 	}
 };
 export const getAllUsers = async () => {
@@ -74,18 +77,17 @@ export const getAllUsers = async () => {
 			orderBy: { id: "asc" },
 		});
 		return users;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error fetching users:", error);
-				throw error
-
+		throw error;
 	}
 };
 export const getUserById = async (id: number) => {
 	try {
 		const user = await prisma.user.findUnique({ where: { id } });
-		console.log(user)
+		console.log(user);
 		return user;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error fetching user by ID:", error);
 		throw new Error(error.message || "Error fetching user by ID");
 	}
@@ -99,24 +101,22 @@ export const deleteUserById = async (id: number) => {
 			data: { deletedAt: new Date() },
 		});
 		return user;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error deleting user by ID:", error);
-				throw error
-
+		throw error;
 	}
 };
 export const activateUserById = async (id: number) => {
-	console.log(id)
+	console.log(id);
 	try {
 		const user = await prisma.user.update({
 			where: { id },
 			data: { deletedAt: null },
 		});
 		return user;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error activating user by ID:", error);
-				throw error
-
+		throw error;
 	}
 };
 export const getAllUsersDeleted = async () => {
@@ -125,57 +125,53 @@ export const getAllUsersDeleted = async () => {
 			where: { deletedAt: { not: null } },
 		});
 		return users;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error fetching deleted users:", error);
-				throw error
-
+		throw error;
 	}
 };
 export const removeLeaderFromCells = async (userId: number) => {
 	const userLeaderCell = await prisma.cell.findFirst({
 		where: { leaderId: userId, deletedAt: null },
 	});
-	if (!userLeaderCell) throw new Error("User is not a leader of any cell");
+	if (!userLeaderCell)
+		throw new Error("User is not a leader of any cell");
 	try {
 		const updatedCells = await prisma.cell.update({
 			where: { id: userLeaderCell.id },
 			data: {
-				leaderId: null
+				leaderId: null,
 			},
 		});
 		return updatedCells;
-	} catch (error:any) {
+	} catch (error: any) {
 		console.error("Error removing leader from cells:", error);
-				throw error
-
+		throw error;
 	}
 };
 
 export const updateUserById = async (
 	id: number,
-	data: Partial<UserCreateInterface>
+	data:  Partial<UserInterface>
 ) => {
-
 	const userExists = await validateUserExists({ id });
 	if (!userExists) throw new Error("User not found");
-	await validateData(data);
-
+	console.log('papap')
 	try {
-	const { user: userInfo } = data;
-		const user = await prisma.user.update({
+		const userUpdate = await prisma.user.update({
 			where: { id },
 			data: {
-				name: userInfo!.name ? userInfo!.name : undefined,
-				email: userInfo!.email ? userInfo!.email : undefined,
-				password: userInfo!.password ? userInfo!.password : undefined,
-				role: userInfo!.role ? userInfo!.role : undefined,
+				name: data.user?.name || undefined, // Accede a `name` dentro de `user`
+				email: data.user?.email || undefined, // Accede a `email` dentro de `user`
+				password: data.user?.password && data.user.password.length > 0 ? data.user.password : undefined, // Accede a `password` dentro de `user`
+				role: data.user?.role || undefined, // Accede a `role` dentro de `user`
 			},
 		});
+		console.log("desde el servicio", userUpdate);
 
-		return { user, };
-	} catch (error:any) {
+		return userUpdate;
+	} catch (error: any) {
 		console.error("Error updating user by ID:", error);
-				throw error
-
+		throw error;
 	}
 };
