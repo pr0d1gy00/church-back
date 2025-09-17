@@ -33,9 +33,9 @@ export const createUser = async (data: UserCreateInterface) => {
 		}
 
 		return { user, device: userDevice };
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error creating user:", error);
-		throw new Error(error instanceof Error ? error.message : "Error creating user");
+		throw error
 	}
 };
 export const getUserByEmail = async (email: string) => {
@@ -51,9 +51,9 @@ export const getUserByEmail = async (email: string) => {
 			 },
 		});
 		return user;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error fetching user by email:", error);
-		throw new Error("Error fetching user by email");
+		throw new Error(error.message || "Error fetching user by email");
 	}
 };
 export const getAllUsers = async () => {
@@ -74,9 +74,10 @@ export const getAllUsers = async () => {
 			orderBy: { id: "asc" },
 		});
 		return users;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error fetching users:", error);
-		throw new Error("Error fetching users");
+				throw error
+
 	}
 };
 export const getUserById = async (id: number) => {
@@ -84,9 +85,9 @@ export const getUserById = async (id: number) => {
 		const user = await prisma.user.findUnique({ where: { id } });
 		console.log(user)
 		return user;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error fetching user by ID:", error);
-		throw new Error("Error fetching user by ID");
+		throw new Error(error.message || "Error fetching user by ID");
 	}
 };
 export const deleteUserById = async (id: number) => {
@@ -98,9 +99,10 @@ export const deleteUserById = async (id: number) => {
 			data: { deletedAt: new Date() },
 		});
 		return user;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error deleting user by ID:", error);
-		throw new Error("Error deleting user by ID");
+				throw error
+
 	}
 };
 export const activateUserById = async (id: number) => {
@@ -111,9 +113,10 @@ export const activateUserById = async (id: number) => {
 			data: { deletedAt: null },
 		});
 		return user;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error activating user by ID:", error);
-		throw new Error("Error activating user by ID");
+				throw error
+
 	}
 };
 export const getAllUsersDeleted = async () => {
@@ -122,9 +125,10 @@ export const getAllUsersDeleted = async () => {
 			where: { deletedAt: { not: null } },
 		});
 		return users;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error fetching deleted users:", error);
-		throw new Error("Error fetching deleted users");
+				throw error
+
 	}
 };
 export const removeLeaderFromCells = async (userId: number) => {
@@ -140,9 +144,10 @@ export const removeLeaderFromCells = async (userId: number) => {
 			},
 		});
 		return updatedCells;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error removing leader from cells:", error);
-		throw new Error("Error removing leader from cells");
+				throw error
+
 	}
 };
 
@@ -156,7 +161,7 @@ export const updateUserById = async (
 	await validateData(data);
 
 	try {
-	const { user: userInfo, device: deviceInfo } = data;
+	const { user: userInfo } = data;
 		const user = await prisma.user.update({
 			where: { id },
 			data: {
@@ -166,20 +171,11 @@ export const updateUserById = async (
 				role: userInfo!.role ? userInfo!.role : undefined,
 			},
 		});
-		let userDevice;
-		if (deviceInfo) {
-			userDevice = await prisma.device.update({
-				where: {  userId: user.id },
-				data: {
-					userId: user.id,
-					deviceToken: deviceInfo.deviceToken,
-					platform: deviceInfo.platform,
-				},
-			});
-		}
-		return { user, device: userDevice };
-	} catch (error) {
+
+		return { user, };
+	} catch (error:any) {
 		console.error("Error updating user by ID:", error);
-		throw new Error("Error updating user by ID");
+				throw error
+
 	}
 };

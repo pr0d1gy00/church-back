@@ -25,7 +25,7 @@ export const createCell = async (data: CellCreateInterface) => {
 		return cell;
 	} catch (error) {
 		console.error("Error creating cell:", error);
-		throw new Error("Error creating cell");
+		throw error
 	}
 };
 export const getAllCells = async (): Promise<CellInterface[]> => {
@@ -39,7 +39,7 @@ export const getAllCells = async (): Promise<CellInterface[]> => {
 		return cells;
 	} catch (error) {
 		console.error("Error fetching cells:", error);
-		throw new Error("Error fetching cells");
+		throw error
 	}
 };
 export const getCellById = async (id: number): Promise<CellInterface | null> => {
@@ -60,7 +60,7 @@ export const getCellById = async (id: number): Promise<CellInterface | null> => 
 		return cell;
 	} catch (error) {
 		console.error("Error fetching cell by ID:", error);
-		throw new Error("Error fetching cell by ID");
+		throw error
 	}
 };
 export const getCellsDeleted = async (): Promise<CellInterface[] | null> => {
@@ -74,7 +74,7 @@ export const getCellsDeleted = async (): Promise<CellInterface[] | null> => {
 		return cells;
 	} catch (error) {
 		console.error("Error fetching deleted cells:", error);
-		throw new Error("Error fetching deleted cells");
+		throw error
 	}
 };
 export const updateCell = async (id: number, data: Partial<CellCreateInterface>): Promise<CellInterface | null> => {
@@ -111,7 +111,7 @@ export const updateCell = async (id: number, data: Partial<CellCreateInterface>)
 		return cell;
 	} catch (error) {
 		console.error("Error updating cell:", error);
-		throw new Error("Error updating cell");
+		throw error
 	}
 };
 export const deleteCell = async (id: number): Promise<CellInterface | null> => {
@@ -125,12 +125,13 @@ export const deleteCell = async (id: number): Promise<CellInterface | null> => {
 		return cell;
 	} catch (error) {
 		console.error("Error deleting cell:", error);
-		throw new Error("Error deleting cell");
+				throw error
+
 	}
 };
 export const activateCell = async (id: number): Promise<CellInterface | null> => {
 	console.log(id
-		
+
 	)
 	try {
 		const cell = await prisma.cell.update({
@@ -140,7 +141,8 @@ export const activateCell = async (id: number): Promise<CellInterface | null> =>
 		return cell;
 	} catch (error) {
 		console.error("Error activating cell:", error);
-		throw new Error("Error activating cell");
+				throw error
+
 	}
 };
 export const addUserToCell = async (cellId: number, userId: number[]) => {
@@ -159,7 +161,8 @@ export const addUserToCell = async (cellId: number, userId: number[]) => {
 		return added;
 	} catch (error) {
 		console.error("Error adding user to cell:", error);
-		throw new Error("Error adding user to cell");
+				throw error
+
 	}
 };
 export const removeUserFromCell = async (cellId: number, userId: number) => {
@@ -194,6 +197,6 @@ export const removeUserFromCell = async (cellId: number, userId: number) => {
 		return all;
 	} catch (error) {
 		console.error("Error removing user from cell:", error);
-		throw new Error("Error removing user from cell");
+		throw error
 	}
 };

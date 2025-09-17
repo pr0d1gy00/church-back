@@ -7,6 +7,7 @@ import cellRoutes from "./routes/cell.routes";
 import eventRoutes from "./routes/event.routes";
 import cron from "node-cron"; // <-- 1. Importa node-cron
 import { checkAndSendNotifications } from "./services/notification.services";
+import errorMiddleware from "./middlewares/error.middleware";
 dotenv.config();
 const app = express();
 
@@ -26,7 +27,7 @@ app.use("/church/events", eventRoutes);
 app.get("/", (req, res) => {
   res.send("Backend con funcionando correctamente");
 });
-
+app.use(errorMiddleware);
 cron.schedule("* * * * *", () => {
   console.log("Ejecutando tarea programada de notificaciones...");
   console.log("Hora del sistema (UTC):", new Date().toISOString());

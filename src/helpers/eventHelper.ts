@@ -23,6 +23,34 @@ export async function createUserAndEventToAddEvent({
 }) {
 	return userId.map((id) => ({ eventId, userId: id }));
 }
+function formatDaysToText(days: number): string {
+	const wholeDays = Math.floor(days); // Parte entera
+	const fractionalPart = days - wholeDays; // Parte fraccionaria
+
+	let result = "";
+
+	// Manejo de días completos
+	if (wholeDays > 0) {
+		result += `${wholeDays} ${wholeDays === 1 ? "día" : "días"}`;
+	}
+
+	// Manejo de la parte fraccionaria
+	if (fractionalPart > 0) {
+		if (fractionalPart === 0.5) {
+			result += wholeDays > 0 ? " y medio" : "medio día";
+		} else if (fractionalPart === 0.25) {
+			result +=
+				wholeDays > 0 ? " y un cuarto" : "un cuarto de día";
+		} else if (fractionalPart === 0.75) {
+			result +=
+				wholeDays > 0
+					? " y tres cuartos"
+					: "tres cuartos de día";
+		}
+	}
+
+	return result || "menos de un día";
+}
 export async function createObjectNotificationUser({
 	allNotificationOfEvent,
 	userId,
@@ -51,12 +79,18 @@ export async function createManyNotificationsByEvent({
 		title: `${event.title}`,
 		body: `${
 			date > 1
-				? `Faltan ${date} dias para el evento `
+				? `Faltan ${formatDaysToText(date)} para el evento `
 				: date < 1
 				? `Faltan ${
-						date === 0.12 ? 2 : date === 0.25 ? 6 : date=== 0.5 ? 12 : 18
-				} horas para el evento `
-				: "Falta 1 dia para el evento "
+						date === 0.12
+							? "2 horas"
+							: date === 0.25
+							? "6 horas"
+							: date === 0.5
+							? "12 horas"
+							: "18 horas"
+				  } para el evento `
+				: "Falta 1 día para el evento "
 		}${` ` + event.title}`,
 		sendAt: (() => {
 			const newSendAtDate = new Date(eventDate);
@@ -78,16 +112,17 @@ export async function createManyNotificationsByEvent({
 export async function calculateManyNotifications(date: Date) {
 	const howManynotifications: number[] = [];
 	const daysValidsToCreateNotification = [
-		0.12, 0.25, 0.5, 0.75, 1, 2, 3, 4, 5, 7, 15, 20, 25, 30, 60, 90,
+		0.12, 0.25, 0.5, 0.75, 1, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 7,
+		7.8, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 30, 60, 90,
 	];
 	const dateEvent = new Date(date).getTime();
 	const actualDate = new Date().getTime();
 	let diffDays = 0;
 	console.log(dateEvent, actualDate);
-	console.log(diffDays)
+	console.log(diffDays);
 	if (dateEvent > actualDate) {
 		const diffTime = dateEvent - actualDate;
-		console.log(diffTime)
+		console.log(diffTime);
 		diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 	}
 
@@ -96,21 +131,23 @@ export async function calculateManyNotifications(date: Date) {
 			howManynotifications.push(day);
 		}
 	});
-	console.log(howManynotifications)
+	console.log(howManynotifications);
 	return howManynotifications;
 }
 (async () => {
-    const notifications = await calculateManyNotifications(new Date("2025-09-17T00:00:00.000Z"));
-    console.log(notifications);
+	const notifications = await calculateManyNotifications(
+		new Date("2025-09-17T00:00:00.000Z")
+	);
+	console.log(notifications);
 	createManyNotificationsByEvent({
-	event: {
-		title: "Evento de prueba",
-		eventDate: new Date("2025-09-1T23:00:00.000Z"),
-		description: "Descripción del evento de prueba",
-		location: "Ubicación del evento de prueba",
-		createdBy: 1,
-		notifyAll: true,
-	},
-	dates: notifications,
-});
+		event: {
+			title: "Evento de prueba",
+			eventDate: new Date("2025-09-1T23:00:00.000Z"),
+			description: "Descripción del evento de prueba",
+			location: "Ubicación del evento de prueba",
+			createdBy: 1,
+			notifyAll: true,
+		},
+		dates: notifications,
+	});
 })();

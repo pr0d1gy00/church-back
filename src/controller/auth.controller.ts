@@ -31,6 +31,7 @@ export const loginController = async (req: Request, res: Response) => {
 }
 export const loginWithBiometricController = async (req: Request, res: Response) => {
 	const {email, token}: { email: string; token: string } = req.body;
+	console.log({email, token})
 	try {
 		if (!token) {
 			return res.status(400).json({ message: "Token requerido" });

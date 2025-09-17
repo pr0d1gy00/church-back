@@ -55,9 +55,10 @@ export async function createEvent(
 			return event;
 		});
 		return newEvent;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error creating event:", error);
-		throw new Error("Error creating event");
+			throw error
+
 	}
 }
 export const addUserToEventToNotify = async ({
@@ -114,12 +115,13 @@ export const addUserToEventToNotify = async ({
 			return created;
 		});
 		return eventUser;
-	} catch (error) {
+	} catch (error:any	) {
 		console.error(
 			"Error adding user to event notifications:",
 			error
 		);
-		throw new Error("Error adding user to event notifications");
+				throw error
+
 	}
 };
 export async function getEventByUserSubscription( userId: number ) {
@@ -138,9 +140,10 @@ export async function getEventByUserSubscription( userId: number ) {
 			orderBy: { eventDate: "asc" },
 		});
 		return events;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error fetching events by user subscription:", error);
-		throw new Error("Error fetching events by user subscription");
+				throw error
+
 	}
 }
 export async function getAllEvents(): Promise<EventInterface[]> {
@@ -152,7 +155,8 @@ export async function getAllEvents(): Promise<EventInterface[]> {
 		return events;
 	} catch (error) {
 		console.error("Error fetching events:", error);
-		throw new Error("Error fetching events");
+				throw error
+
 	}
 }
 
@@ -189,9 +193,10 @@ export async function getEventById(
 
 		});
 		return event;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error fetching event by ID:", error);
-		throw new Error("Error fetching event by ID");
+				throw error
+
 	}
 }
 
@@ -215,9 +220,10 @@ export async function updateEvent(
 			data: eventData,
 		});
 		return updatedEvent;
-	} catch (error) {
+	} catch (error:any) {
 		console.error("Error updating event:", error);
-		throw new Error("Error updating event");
+				throw error
+
 	}
 }
 
@@ -257,7 +263,8 @@ export async function deleteEvent(
 		return deletedEvent;
 	} catch (error) {
 		console.error("Error deleting event:", error);
-		throw new Error("Error deleting event");
+				throw error
+
 	}
 }
 
@@ -269,12 +276,13 @@ export async function getAllNotificationsByEventId(id: number) {
 			where: { eventId: id },
 		});
 		return notifications;
-	} catch (error) {
+	} catch (error:any) {
 		console.error(
 			"Error fetching notifications by event ID:",
 			error
 		);
-		throw new Error("Error fetching notifications by event ID");
+				throw error
+
 	}
 }
 
@@ -311,11 +319,12 @@ export const removeUserOfEventToNotify = async ({
 		);
 		return deleted;
 	}
-	catch (error) {
+	catch (error:any) {
 		console.error(
 			"Error removing user from event notifications:",
 			error
 		);
-		throw new Error("Error removing user from event notifications");
+				throw error
+
 	}
 };

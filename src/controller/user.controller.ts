@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
 	getUserById,
 	getAllUsers,
@@ -15,7 +15,8 @@ import { removeLeaderFromCells } from '../services/user.services';
 
 export const createUserController = async (
 	req: Request,
-	res: Response
+	res: Response,
+	next: NextFunction
 ) => {
 
 	const userData: UserCreateInterface = req.body;
@@ -25,13 +26,8 @@ export const createUserController = async (
 		const newUser = await createUser({ ...userData, user: { ...userData.user, password: hashedPassword } });
 		res.status(201).json({ message: "Usuario creado exitosamente", user: newUser });
 	} catch (error) {
-		if (error instanceof Error) {
-			res.status(500).json({ message: error.message });
-		} else {
-			res.status(500).json({
-				message: "Ocurrió un error desconocido",
-			});
-		}
+		    next(error); // Esto asegura que el error llegue al middleware
+
 	}
 };
 export const getUserByIdController = async (
